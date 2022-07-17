@@ -12,47 +12,64 @@ public class StateTest {
 	private static State state;
 	
 	public StateTest() { }
-	
-	// before all my tests - run this setup method
-	@BeforeClass // @BeforeAll
-	public static void setupBeforeAll() {
-		state = new State();
-	}
-	
 
 	@Test
 	public void setInvalidAbbreviationTooLong() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			state.setAbbreviation("ABC");
+			State state = new State("California", "Cali");
 		});
 	}
 	
 	@Test
 	public void setInvalidAbbreviationTooShort() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			state.setAbbreviation("A");
+			State state = new State("California", "C");
 		});
 	}
 	
 	@Test
 	public void setInvalidAbbreviationNotLetters() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			state.setAbbreviation("A1");
+			State state = new State("California", "C1");
+		});
+	}
+	
+
+	@Test
+	public void setInvalidAbbreviationNonLetters() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			State state = new State("California", "C_");
 		});
 	}
 	
 	@Test
 	public void setInvalidAbbreviationNull() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			state.setAbbreviation(null);
+			State state = new State("California", null);
+		});
+	}
+	
+
+	@Test
+	public void setInvalidANameNull() {
+		assertThrows(IllegalArgumentException.class, () -> {
+			State state = new State(null, "CA");
 		});
 	}
 	
 	@Test
 	public void setValidAbbreviation() {
 		String abbr = "CA";
-		state.setAbbreviation(abbr);
+		State state = new State("California", "CA");
 		assertEquals(state.getAbbreviation(), abbr);
+	}
+	
+
+	@Test
+	public void setValidAbbreviationLowercase() {
+		String abbr = "CA";
+		State state = new State("California", "ca");
+		assertEquals(state.getAbbreviation(), abbr.toUpperCase());
 	}
 	
 }

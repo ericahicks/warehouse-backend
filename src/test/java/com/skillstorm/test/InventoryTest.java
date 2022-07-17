@@ -4,19 +4,22 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
-import com.skillstorm.models.Inventory;
+import com.skillstorm.models.Brand;
+import com.skillstorm.models.Category;
+import com.skillstorm.models.InventoryItem;
+import com.skillstorm.models.Product;
 
 public class InventoryTest {
 
 	// instance variables refreshed in each test
-	private static Inventory inventory;
+	private static InventoryItem inventory;
 	
 	public InventoryTest() { }
 	
 	// before all my tests - run this setup method
 	@BeforeClass // @BeforeAll
 	public static void setupBeforeAll() {
-		inventory = new Inventory();
+		inventory = new InventoryItem();
 	}
 
 	@Test
@@ -29,7 +32,7 @@ public class InventoryTest {
 	@Test
 	public void setInvalidQuantityInCreate() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			Inventory inventB = new Inventory(null, null, -1);
+			InventoryItem inventB = new InventoryItem(null, -1);
 		});
 	}
 	
@@ -50,7 +53,7 @@ public class InventoryTest {
 	@Test
 	public void setInvalidMinimumInCreate() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			Inventory inventB = new Inventory(null, null, 3, -1);
+			InventoryItem inventB = new InventoryItem(null, 3, -1);
 		});
 	}
 	

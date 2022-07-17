@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Represents a category of products that are stored in the warehouses.
  * Used to provide sorting for the inventory system. 
  */
-public class Category implements Serializable {
+public final class Category implements Serializable, Cloneable {
 
 	/** Serial number for identifying the class type of this category instance 
 	 * when it is converted into a byte stream.	 
@@ -15,24 +15,11 @@ public class Category implements Serializable {
 	/** 
 	 * Unique id number that identifies this category from all the other categories.
 	 */
-	private int id;
+	private final int id;
 	/** 
 	 * Unique descriptive name that identifies this category from all the other categories.
 	 */
-	private String name;
-	
-	/** 
-	 * Constructor that does not set the fields for this category.
-	 */
-	public Category() { }
-	
-	/** 
-	 * Constructor that sets the name field of this category. 
-	 * @param name
-	 */
-	public Category(String name) {
-		this.name = name;
-	}
+	private final String name;
 	
 	/** 
 	 * Constructor that sets the name and the id of this category.
@@ -42,6 +29,15 @@ public class Category implements Serializable {
 	public Category(int id, String name) {
 		this.id = id;
 		this.name = name;
+	}
+	
+	@Override
+	public Object clone() {
+	    try {
+	        return (Category) super.clone();
+	    } catch (CloneNotSupportedException e) {
+	        return new Category(id, name);
+	    }
 	}
 
 	/**
@@ -53,29 +49,11 @@ public class Category implements Serializable {
 	}
 
 	/**
-	 * Sets the unique identification number of this category.
-	 * @param id
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	/**
 	 * Gets the unique descriptive name of this category.
 	 * @return name
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Sets the name of the category. 
-	 * The name should be a descriptive, unique identifier that indicates the 
-	 * type of this category.
-	 * @param name
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 	
 	/**

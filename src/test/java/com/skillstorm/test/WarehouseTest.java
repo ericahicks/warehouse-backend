@@ -2,8 +2,14 @@ package com.skillstorm.test;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+
 import org.junit.*;
 
+import com.skillstorm.models.Brand;
+import com.skillstorm.models.Category;
+import com.skillstorm.models.InventoryItem;
+import com.skillstorm.models.Product;
 import com.skillstorm.models.Warehouse;
 
 public class WarehouseTest {
@@ -87,5 +93,21 @@ public class WarehouseTest {
 		int capacity = 0;
 		warehouse.setCapacity(capacity);
 		assertEquals(warehouse.getCapacity(), capacity);
+	}
+	
+	@Test
+	public void setInventoryDeepCopy() {
+		Category cat = new Category(1, "lamp");
+		Brand brand = new Brand(1, "Aladdin");
+		Product prod = new Product(1, cat, 
+				"Aladdin's Lamp", "A golden lamp that grants three wishes",
+				"3 Wishes", brand, ""); 
+		InventoryItem item = new InventoryItem(prod, 1, 0);
+		ArrayList<InventoryItem> inventory = new ArrayList<>();
+		inventory.add(item);
+		warehouse.setInventory(inventory);
+
+	    assertNotSame("Verify getInventory returns a copy", inventory, warehouse.getInventory());
+	    assertNotSame("Verify getProduct returns a deep copy", inventory.get(0).getProduct(), prod);
 	}
 }

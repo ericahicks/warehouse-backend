@@ -1,13 +1,14 @@
 package com.skillstorm.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
  * Represents a Warehouse name, location, and capacity. 
  * This class is used by the inventory and User classes in the Warehouse db.
  */
-public class Warehouse implements Serializable {
+public class Warehouse implements Serializable, Cloneable {
 	
 	/** Serial number for identifying the class type of this warehouse instance 
 	 * when it is converted into a byte stream.	 
@@ -45,7 +46,11 @@ public class Warehouse implements Serializable {
 	 * For example: 94040 or 94040-1234
 	 */
 	private String zip;
-	
+	/**
+	 * A list of inventory items that together describe what is 
+	 * currently in stock at this warehouse.
+	 */
+	private ArrayList<InventoryItem> inventory;
 	/**
 	 * Constructor that does not set the properties of this warehouse.
 	 */
@@ -59,7 +64,12 @@ public class Warehouse implements Serializable {
 	public Warehouse(String name) {
 		this(name, 0);
 	}
-	
+	/**
+	 * Constructor that only sets the name of this warehouse instance
+	 * and the capacity of the warehouse.
+	 * @param name
+	 * @param capacity The number of whole units of a generic product that could  be stored in this warehouse.
+	 */
 	public Warehouse(String name, int capacity) {
 		this.name = name;
 		setCapacity(capacity);
@@ -67,7 +77,7 @@ public class Warehouse implements Serializable {
 	
 	/**
 	 * Constructor that sets all the fields except the unique identification number
-	 * for this warehouse.
+	 * for this warehouse and the inventory list.
 	 * @param name
 	 * @param capacity
 	 * @param street
@@ -75,7 +85,8 @@ public class Warehouse implements Serializable {
 	 * @param state
 	 * @param zip
 	 */
-	public Warehouse(String name, int capacity, String street, String city, State state, String zip) {
+	public Warehouse(String name, int capacity,
+			String street, String city, State state, String zip) {
 		super();
 		this.name = name;
 		setCapacity(capacity);
@@ -87,7 +98,8 @@ public class Warehouse implements Serializable {
 
 
 	/**
-	 * Constructor that sets all the properties of this warehouse.
+	 * Constructor that sets all the properties of this warehouse
+	 * except the inventory list.
 	 * @param id
 	 * @param name
 	 * @param capacity
@@ -106,7 +118,80 @@ public class Warehouse implements Serializable {
 		this.state = state;
 		this.zip = zip;
 	}
+	
 
+
+	/**
+	 * Constructor that sets all the properties of this warehouse.
+	 * @param id
+	 * @param name
+	 * @param capacity
+	 * @param street
+	 * @param city
+	 * @param state
+	 * @param zip
+	 */
+	public Warehouse(int id, String name, int capacity, ArrayList<InventoryItem> inventory,
+			String street, String city, State state, String zip) {
+		super();
+		this.id = id;
+		this.name = name;
+		setCapacity(capacity);
+		setInventory(inventory);
+		this.street = street;
+		this.city = city;
+		this.state = state;
+		this.zip = zip;
+	}
+	
+	@Override
+	public Object clone() {
+	    try {
+	        return (Warehouse) super.clone();
+	    } catch (CloneNotSupportedException e) {
+	        return new Warehouse(id, name, capacity, getInventory(),
+	    			street, city, state, zip);
+	    }
+	}
+
+	/**
+	 * ArrayLists the inventory of the warehouse to a list of inventory items.
+	 * If an inventory list already existed, it is overwritten.
+	 * Will throw an IllegalArgumentException if the sum of the inventory
+	 * being added exceeds the capacity of the warehouse.
+	 * Clones the inventory handed it to avoid leaving an open reference to his internal property.
+	 * @param inventory
+	 */
+	public void setInventory(ArrayList<InventoryItem> inventory) {
+		if (inventory != null && inventoryCount(inventory) > capacity)
+			throw new IllegalArgumentException("Inventory cannot exceed capacity.");
+		ArrayList<InventoryItem> deepCopy = new ArrayList<>();
+		for (InventoryItem item : inventory) {
+			deepCopy.add((InventoryItem) item.clone());
+		}
+		this.inventory = deepCopy;
+	}
+	
+	/**
+	 * Adds up the number of products referenced in each inventory item.
+	 * If the inventory is empty returns 0.
+	 * @param inventory A collection (list, set, etc) of InventoryItems
+	 * @return sum The combined quantity of products listed in all the InventoryItems
+	 */
+	private int inventoryCount(ArrayList<InventoryItem> inventory) {
+		int sum = 0;
+		for (InventoryItem item : inventory) {
+			sum += item.getQuantity();
+		}
+		return sum;
+	}
+
+	/**
+	 * Returns a deep copy of the inventory items collection of this warehouse.
+	 */
+	public ArrayList<InventoryItem> getInventory() {
+		return this.inventory;
+	}
 
 	/**
 	* The serial number used to identify the class type of instances of the class
@@ -126,7 +211,7 @@ public class Warehouse implements Serializable {
 	}
 
 	/**
-	 * Sets the unique identification number of this warehouse.
+	 * ArrayLists the unique identification number of this warehouse.
 	 * @param id the id to set
 	 */
 	public void setId(int id) {
@@ -142,7 +227,7 @@ public class Warehouse implements Serializable {
 	}
 
 	/**
-	 * Sets the name of this warehouse. It does not need to be unique.
+	 * ArrayLists the name of this warehouse. It does not need to be unique.
 	 * @param name The name of the warehouse.
 	 */
 	public void setName(String name) {
@@ -160,7 +245,7 @@ public class Warehouse implements Serializable {
 	}
 
 	/**
-	 * Sets the capacity of this warehouse.
+	 * ArrayLists the capacity of this warehouse.
 	 * Throws an IllegalArgumentException if the capacity is less than 0.
 	 * @param capacity the capacity to set
 	 */
@@ -180,7 +265,7 @@ public class Warehouse implements Serializable {
 	}
 
 	/**
-	 * Sets the street address of this warehouse. May include one or two
+	 * ArrayLists the street address of this warehouse. May include one or two
 	 * lines if there is an apartment or suite number specified.
 	 * @param street the street to set
 	 */
@@ -197,7 +282,7 @@ public class Warehouse implements Serializable {
 	}
 
 	/**
-	 * Sets the city that this warehouse is located in.
+	 * ArrayLists the city that this warehouse is located in.
 	 * @param city the city to set
 	 */
 	public void setCity(String city) {
@@ -213,7 +298,7 @@ public class Warehouse implements Serializable {
 	}
 
 	/**
-	 * Sets the state that this warehouse is located in.
+	 * ArrayLists the state that this warehouse is located in.
 	 * @param state the state to set
 	 */
 	public void setState(State state) {
@@ -229,7 +314,7 @@ public class Warehouse implements Serializable {
 	}
 
 	/**
-	 * Sets the zip code of this warehouse. It may be 5 or 9 digits.
+	 * ArrayLists the zip code of this warehouse. It may be 5 or 9 digits.
 	 * Throws illegal argument exception if it is not a vaild zipcode format.
 	 * @param zip The zipcode in a valid form 12345 or 12345-6789
 	 */

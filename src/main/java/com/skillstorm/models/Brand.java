@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Represents a company's brand name for a line of products.
  */
-public class Brand implements Serializable {
+public final class Brand implements Serializable, Cloneable {
 	/** Serial number for identifying the class type of this brand instance 
 	 * when it is converted into a byte stream.	 
 	 */
@@ -14,26 +14,11 @@ public class Brand implements Serializable {
 	 * A unique identification number for distinguishing this brand
 	 * from other brands.
 	 */
-	private int id;
+	private final int id;
 	/**
 	 * A unique name that this brand identifies by.
 	 */
-	private String name;
-	
-	/**
-	 * A constructor that does not set the fields of this brand.
-	 */
-	public Brand() { }
-	
-	/** 
-	 * A constructor that does not set the unique identification number
-	 * of this brand. It only sets the name of the brand.
-	 * @param name A unique name that this brand identifies by.
-	 */
-	public Brand(String name) {
-		super();
-		this.name = name;
-	}
+	private final String name;
 
 	/**
 	 * Constructor that sets the name and unique identification number
@@ -46,6 +31,15 @@ public class Brand implements Serializable {
 		this.id = id;
 		this.name = name;
 	}
+	
+	@Override
+	public Object clone() {
+	    try {
+	        return (Brand) super.clone();
+	    } catch (CloneNotSupportedException e) {
+	        return new Brand(id, name);
+	    }
+	}
 
 	/**
 	 * Gets the unique identification number that identifies this brand.
@@ -56,27 +50,11 @@ public class Brand implements Serializable {
 	}
 
 	/**
-	 * Sets the unique identification number that identifies this brand.
-	 * @param id the id to set
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	/**
 	 * Gets the name that his brand identifies by.
 	 * @return the name
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Sets the unique name that this brand identifies by.
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
 	}
 	
 	/**

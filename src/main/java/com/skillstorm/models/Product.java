@@ -2,7 +2,7 @@ package com.skillstorm.models;
 
 import java.io.Serializable;
 
-public class Product implements Serializable {
+public class Product implements Serializable, Cloneable {
 
 	/** Serial number for identifying the class type of this user instance 
 	 * when it is converted into a byte stream.	 
@@ -64,11 +64,11 @@ public class Product implements Serializable {
 	 */
 	public Product(Category category, String name, String description, String size, Brand brand, String imageURL) {
 		super();
-		this.category = category;
+		setCategory(category);
 		this.name = name;
 		this.description = description;
 		this.size = size;
-		this.brand = brand;
+		setBrand(brand);
 		this.imageURL = imageURL;
 	}
 
@@ -88,12 +88,24 @@ public class Product implements Serializable {
 			String imageURL) {
 		super();
 		this.id = id;
-		this.category = category;
+		setCategory(category);
 		this.name = name;
 		this.description = description;
 		this.size = size;
-		this.brand = brand;
+		setBrand(brand);
 		this.imageURL = imageURL;
+	}
+	
+	@Override
+	public Object clone() {
+	    try {
+	        return (Product) super.clone();
+	    } catch (CloneNotSupportedException e) {
+	        return new Product(id, category, 
+	    			name, description, 
+	    			size, brand,
+	    			imageURL);
+	    }
 	}
 
 	/**
@@ -114,14 +126,16 @@ public class Product implements Serializable {
 
 	/**
 	 * Gets the category that this product belongs to.
+	 * Does not bother to return a clone bc Category is immutable.
 	 * @return the category
 	 */
 	public Category getCategory() {
-		return category;
+		return this.category;
 	}
 
 	/**
 	 * Sets the category that this product belongs to.
+	 * Does not bother to use a clone bc Category is immutable.
 	 * @param category the category to set
 	 */
 	public void setCategory(Category category) {
@@ -185,14 +199,16 @@ public class Product implements Serializable {
 
 	/**
 	 * Gets the brand type of this product.
+	 * Does not bother to return a clone bc Brand is immutable.
 	 * @return the brand
 	 */
 	public Brand getBrand() {
-		return brand;
+		return this.brand;
 	}
 
 	/**
 	 * Sets the brand type of this product.
+	 * Does not bother to clone the brand handed in bc Brand is immutable.
 	 * @param brand the brand to set
 	 */
 	public void setBrand(Brand brand) {

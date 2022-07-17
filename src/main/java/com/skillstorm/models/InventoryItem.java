@@ -2,97 +2,84 @@ package com.skillstorm.models;
 
 import java.io.Serializable;
 
-public class Inventory implements Serializable {
+public class InventoryItem implements Serializable, Cloneable {
 
 	/** Serial number for identifying the class type of this inventory instance 
 	 * when it is converted into a byte stream.	 
 	 */
 	private static final long serialVersionUID = -6671709745943555138L;
 	/**
-	 * The warehouse is the where the inventory item/quantity being described is located.
-	 */
-	private Warehouse warehouse;
-	/**
-	 * The product is the product whose quantity and location are being described in this
+	 * The product is the product whose quantity is being described in this
 	 * inventory item.
 	 */
 	private Product product;
 	/* 
 	 * The quantity is the number or units of the associated product 
-	 * in stock at the particular warehouse in this referenced in this inventory item.
+	 * that are in stock.
 	 */
 	private int quantity;
 	/** 
 	 * The minimum is the minimum quantity of the associated product
-	 * that the associated warehouse wants to keep in stock
-	 * as described in this inventory item.
+	 * should be kept in stock.
 	 */
 	private int minimum;
 	
 	/**
 	 * Constructor that does not set the fields of this inventory item.
 	 */
-	public Inventory() {
-		this(null, null, 0, 0); // defaults for warehouse, product, quantity, minimum quantity
+	public InventoryItem() {
+		this(null, 0, 0); // defaults for product, quantity, minimum quantity
 	}
 	
 	/** 
-	 * Constructor that sets the warehouse, product, product quantity,
+	 * Constructor that sets the product, product quantity,
 	 * but not the minimum desired quantity of the product to keep in stock. 
-	 * @param warehouse
 	 * @param product
 	 * @param quantity
 	 */
-	public Inventory(Warehouse warehouse, Product product, int quantity) {
-		this(warehouse, product, quantity, 0); // minimum defaults to 0
+	public InventoryItem(Product product, int quantity) {
+		this(product, quantity, 0); // minimum defaults to 0
 	}
 
 	/**
-	 * Constructor that sets the warehouse, product, product quantity, and minimum
+	 * Constructor that sets the product, product quantity, and minimum
 	 * desired quantity of the product for this inventory item.
-	 * @param warehouse
 	 * @param product
 	 * @param quantity
 	 * @param minimum
 	 */
-	public Inventory(Warehouse warehouse, Product product, int quantity, int minimum) {
+	public InventoryItem(Product product, int quantity, int minimum) {
 		super();
-		this.warehouse = warehouse;
 		this.product = product;
 		setQuantity(quantity);
 		setMinimum(minimum);
 	}
-
-	/**
-	 * Gets the warehouse that this inventory item is associated with.
-	 * @return the warehouse
-	 */
-	public Warehouse getWarehouse() {
-		return warehouse;
-	}
-
-	/**
-	 * Sets the warehouse that his inventory item is associated with.
-	 * @param warehouse the warehouse to set
-	 */
-	public void setWarehouse(Warehouse warehouse) {
-		this.warehouse = warehouse;
+	
+	@Override
+	public Object clone() {
+	    try {
+	        return (InventoryItem) super.clone();
+	    } catch (CloneNotSupportedException e) {
+	        return new InventoryItem(getProduct(), this.quantity, this.minimum);
+	    }
 	}
 
 	/**
 	 * Gets the product that this inventory item refers to.
+	 * Returns a deep copy not a reference to the internal product.
 	 * @return the product
 	 */
 	public Product getProduct() {
-		return product;
+	    return (Product) this.product.clone();
 	}
 
 	/**
 	 * Sets the product that this inventory item refers to.
+	 * Uses clone to avoid leaving an available reference to this internal property.
 	 * @param product the product to set
 	 */
 	public void setProduct(Product product) {
-		this.product = product;
+		this.product = (Product) product.clone();
 	}
 
 	/**
@@ -147,7 +134,7 @@ public class Inventory implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Inventory [warehouse=" + warehouse + ", product=" + product + ", quantity=" + quantity + ", minimum="
+		return "Inventory [product=" + product + ", quantity=" + quantity + ", minimum="
 				+ minimum + "]";
 	}
 
@@ -158,7 +145,6 @@ public class Inventory implements Serializable {
 		result = prime * result + minimum;
 		result = prime * result + ((product == null) ? 0 : product.hashCode());
 		result = prime * result + quantity;
-		result = prime * result + ((warehouse == null) ? 0 : warehouse.hashCode());
 		return result;
 	}
 
@@ -170,7 +156,7 @@ public class Inventory implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Inventory other = (Inventory) obj;
+		InventoryItem other = (InventoryItem) obj;
 		if (minimum != other.minimum)
 			return false;
 		if (product == null) {
@@ -179,11 +165,6 @@ public class Inventory implements Serializable {
 		} else if (!product.equals(other.product))
 			return false;
 		if (quantity != other.quantity)
-			return false;
-		if (warehouse == null) {
-			if (other.warehouse != null)
-				return false;
-		} else if (!warehouse.equals(other.warehouse))
 			return false;
 		return true;
 	}
