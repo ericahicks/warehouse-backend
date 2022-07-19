@@ -2,7 +2,13 @@ package com.skillstorm.models;
 
 import java.io.Serializable;
 
+import com.skillstorm.builders.ProductBuilder;
+
 public class Product implements Serializable, Cloneable {
+	
+    //////////////////////////////////////////////////////////////////
+	/////////////////////// Instance Variables ///////////////////////
+	//////////////////////////////////////////////////////////////////
 
 	/** Serial number for identifying the class type of this user instance 
 	 * when it is converted into a byte stream.	 
@@ -40,6 +46,11 @@ public class Product implements Serializable, Cloneable {
 	// TODO future versions should use this for a main image 
 	// in addition to a separate list of images for front/back/side views etc.
 	private String imageURL;
+	
+
+    //////////////////////////////////////////////////////////////////
+	////////////////////////// Constructors //////////////////////////
+	//////////////////////////////////////////////////////////////////
 	/**
 	 * Constructor that does not set the fields of this product.
 	 */
@@ -94,19 +105,22 @@ public class Product implements Serializable, Cloneable {
 		this.size = size;
 		setBrand(brand);
 		this.imageURL = imageURL;
-	}
+	}	
 	
-	@Override
-	public Object clone() {
-	    try {
-	        return (Product) super.clone();
-	    } catch (CloneNotSupportedException e) {
-	        return new Product(id, category, 
-	    			name, description, 
-	    			size, brand,
-	    			imageURL);
-	    }
+
+	public Product(ProductBuilder builder) {
+		this.id = builder.getId();
+		this.category = builder.getCategory();
+		this.name = builder.getName();
+		this.description = builder.getDescription();
+		this.size = builder.getSize();
+		this.brand = builder.getBrand();
+		this.imageURL = builder.getImageURL();
 	}
+
+    /////////////////////////////////////////////////////////////////
+	/////////////////////// Getters and Setters /////////////////////
+	/////////////////////////////////////////////////////////////////
 
 	/**
 	 * Gets the unique identification number of this product.
@@ -239,6 +253,11 @@ public class Product implements Serializable, Cloneable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+	
+
+    //////////////////////////////////////////////////////////////////
+	///////////////////////  Other Methods  //////////////////////////
+	//////////////////////////////////////////////////////////////////
 
 	@Override
 	public String toString() {
@@ -304,5 +323,16 @@ public class Product implements Serializable, Cloneable {
 		return true;
 	}
 	
+	@Override
+	public Object clone() {
+	    try {
+	        return (Product) super.clone();
+	    } catch (CloneNotSupportedException e) {
+	        return new Product(id, category, 
+	    			name, description, 
+	    			size, brand,
+	    			imageURL);
+	    }
+	}
 	
 }
