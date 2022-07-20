@@ -1,8 +1,9 @@
 package com.skillstorm.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.regex.Pattern;
+
+import com.skillstorm.builders.WarehouseBuilder;
 
 /**
  * Represents a Warehouse name, location, and capacity. 
@@ -46,11 +47,6 @@ public class Warehouse implements Serializable, Cloneable {
 	 * For example: 94040 or 94040-1234
 	 */
 	private String zip;
-	/**
-	 * A list of inventory items that together describe what is 
-	 * currently in stock at this warehouse.
-	 */
-	private ArrayList<InventoryItem> inventory;
 	/**
 	 * Constructor that does not set the properties of this warehouse.
 	 */
@@ -119,29 +115,14 @@ public class Warehouse implements Serializable, Cloneable {
 		this.zip = zip;
 	}
 	
-
-
-	/**
-	 * Constructor that sets all the properties of this warehouse.
-	 * @param id
-	 * @param name
-	 * @param capacity
-	 * @param street
-	 * @param city
-	 * @param state
-	 * @param zip
-	 */
-	public Warehouse(int id, String name, int capacity, ArrayList<InventoryItem> inventory,
-			String street, String city, State state, String zip) {
-		super();
-		this.id = id;
-		this.name = name;
-		setCapacity(capacity);
-		setInventory(inventory);
-		this.street = street;
-		this.city = city;
-		this.state = state;
-		this.zip = zip;
+	public Warehouse(WarehouseBuilder builder) {
+		this.id = builder.getId();
+		this.name = builder.getName();
+		this.capacity = builder.getCapacity();
+		this.street = builder.getStreet();
+		this.city = builder.getCity();
+		this.state = builder.getState();
+		this.zip = builder.getZip();
 	}
 	
 	@Override
@@ -149,48 +130,9 @@ public class Warehouse implements Serializable, Cloneable {
 	    try {
 	        return (Warehouse) super.clone();
 	    } catch (CloneNotSupportedException e) {
-	        return new Warehouse(id, name, capacity, getInventory(),
+	        return new Warehouse(id, name, capacity,
 	    			street, city, state, zip);
 	    }
-	}
-
-	/**
-	 * ArrayLists the inventory of the warehouse to a list of inventory items.
-	 * If an inventory list already existed, it is overwritten.
-	 * Will throw an IllegalArgumentException if the sum of the inventory
-	 * being added exceeds the capacity of the warehouse.
-	 * Clones the inventory handed it to avoid leaving an open reference to his internal property.
-	 * @param inventory
-	 */
-	public void setInventory(ArrayList<InventoryItem> inventory) {
-		if (inventory != null && inventoryCount(inventory) > capacity)
-			throw new IllegalArgumentException("Inventory cannot exceed capacity.");
-		ArrayList<InventoryItem> deepCopy = new ArrayList<>();
-		for (InventoryItem item : inventory) {
-			deepCopy.add((InventoryItem) item.clone());
-		}
-		this.inventory = deepCopy;
-	}
-	
-	/**
-	 * Adds up the number of products referenced in each inventory item.
-	 * If the inventory is empty returns 0.
-	 * @param inventory A collection (list, set, etc) of InventoryItems
-	 * @return sum The combined quantity of products listed in all the InventoryItems
-	 */
-	private int inventoryCount(ArrayList<InventoryItem> inventory) {
-		int sum = 0;
-		for (InventoryItem item : inventory) {
-			sum += item.getQuantity();
-		}
-		return sum;
-	}
-
-	/**
-	 * Returns a deep copy of the inventory items collection of this warehouse.
-	 */
-	public ArrayList<InventoryItem> getInventory() {
-		return this.inventory;
 	}
 
 	/**
@@ -385,7 +327,5 @@ public class Warehouse implements Serializable, Cloneable {
 			return false;
 		return true;
 	}
-	
-	
 	
 }

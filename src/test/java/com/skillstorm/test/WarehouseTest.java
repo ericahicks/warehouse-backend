@@ -94,20 +94,4 @@ public class WarehouseTest {
 		warehouse.setCapacity(capacity);
 		assertEquals(warehouse.getCapacity(), capacity);
 	}
-	
-	@Test
-	public void setInventoryDeepCopy() {
-		Category cat = new Category(1, "lamp");
-		Brand brand = new Brand(1, "Aladdin");
-		Product prod = new Product(1, cat, 
-				"Aladdin's Lamp", "A golden lamp that grants three wishes",
-				"3 Wishes", brand, ""); 
-		InventoryItem item = new InventoryItem(prod, 1, 0);
-		ArrayList<InventoryItem> inventory = new ArrayList<>();
-		inventory.add(item);
-		warehouse.setInventory(inventory);
-
-	    assertNotSame("Verify getInventory returns a copy", inventory, warehouse.getInventory());
-	    assertNotSame("Verify getProduct returns a deep copy", inventory.get(0).getProduct(), prod);
-	}
 }

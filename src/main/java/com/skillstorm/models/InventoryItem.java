@@ -2,12 +2,19 @@ package com.skillstorm.models;
 
 import java.io.Serializable;
 
+import com.skillstorm.builders.InventoryBuilder;
+
 public class InventoryItem implements Serializable, Cloneable {
 
 	/** Serial number for identifying the class type of this inventory instance 
 	 * when it is converted into a byte stream.	 
 	 */
 	private static final long serialVersionUID = -6671709745943555138L;
+	/**
+	 * The warehouse is the warehouse at which these items are being stored
+	 */
+	private Warehouse warehouse;
+	
 	/**
 	 * The product is the product whose quantity is being described in this
 	 * inventory item.
@@ -28,7 +35,7 @@ public class InventoryItem implements Serializable, Cloneable {
 	 * Constructor that does not set the fields of this inventory item.
 	 */
 	public InventoryItem() {
-		this(null, 0, 0); // defaults for product, quantity, minimum quantity
+		this(null, null, 0, 0); // defaults for product, quantity, minimum quantity
 	}
 	
 	/** 
@@ -37,8 +44,8 @@ public class InventoryItem implements Serializable, Cloneable {
 	 * @param product
 	 * @param quantity
 	 */
-	public InventoryItem(Product product, int quantity) {
-		this(product, quantity, 0); // minimum defaults to 0
+	public InventoryItem(Warehouse warehouse, Product product, int quantity) {
+		this(warehouse, product, quantity, 0); // minimum defaults to 0
 	}
 
 	/**
@@ -48,11 +55,18 @@ public class InventoryItem implements Serializable, Cloneable {
 	 * @param quantity
 	 * @param minimum
 	 */
-	public InventoryItem(Product product, int quantity, int minimum) {
+	public InventoryItem(Warehouse warehouse, Product product, int quantity, int minimum) {
 		super();
 		this.product = product;
 		setQuantity(quantity);
 		setMinimum(minimum);
+	}
+	
+	public InventoryItem(InventoryBuilder builder) {
+		this.warehouse = builder.getWarehouse();
+		this.product = builder.getProduct();
+		this.quantity = builder.getQuantity();
+		this.minimum = builder.getMinimum();
 	}
 	
 	@Override
@@ -60,8 +74,16 @@ public class InventoryItem implements Serializable, Cloneable {
 	    try {
 	        return (InventoryItem) super.clone();
 	    } catch (CloneNotSupportedException e) {
-	        return new InventoryItem(getProduct(), this.quantity, this.minimum);
+	        return new InventoryItem(getWarehouse(), getProduct(), this.quantity, this.minimum);
 	    }
+	}
+	/**
+	 * Gets the warehouse that this inventory item is stored in
+	 * Returns a deep copy not a reference to the internal product.
+	 * @return the warehouse
+	 */
+	public Warehouse getWarehouse() {
+		return (Warehouse) this.warehouse.clone();
 	}
 
 	/**
@@ -72,11 +94,21 @@ public class InventoryItem implements Serializable, Cloneable {
 	public Product getProduct() {
 	    return (Product) this.product.clone();
 	}
+	
+	/**
+	 * Sets the warehouse that this inventory item refers to.
+	 * Uses clone to avoid leaving an available reference to this internal property.
+	 * @param warehouse 
+	 */
+	public void setWarehouse(Warehouse warehouse) {
+		this.warehouse = (Warehouse) warehouse.clone();
+	}
+
 
 	/**
 	 * Sets the product that this inventory item refers to.
 	 * Uses clone to avoid leaving an available reference to this internal property.
-	 * @param product the product to set
+	 * @param product 
 	 */
 	public void setProduct(Product product) {
 		this.product = (Product) product.clone();
@@ -134,7 +166,7 @@ public class InventoryItem implements Serializable, Cloneable {
 
 	@Override
 	public String toString() {
-		return "Inventory [product=" + product + ", quantity=" + quantity + ", minimum="
+		return "InventoryItem [warehouse=" + warehouse + ", product=" + product + ", quantity=" + quantity + ", minimum="
 				+ minimum + "]";
 	}
 
@@ -144,6 +176,7 @@ public class InventoryItem implements Serializable, Cloneable {
 		int result = 1;
 		result = prime * result + minimum;
 		result = prime * result + ((product == null) ? 0 : product.hashCode());
+		result = prime * result + ((warehouse == null) ? 0 : warehouse.hashCode());
 		result = prime * result + quantity;
 		return result;
 	}
@@ -163,6 +196,11 @@ public class InventoryItem implements Serializable, Cloneable {
 			if (other.product != null)
 				return false;
 		} else if (!product.equals(other.product))
+			return false;
+		if (warehouse == null) {
+			if (other.warehouse != null)
+				return false;
+		} else if (!warehouse.equals(other.warehouse))
 			return false;
 		if (quantity != other.quantity)
 			return false;

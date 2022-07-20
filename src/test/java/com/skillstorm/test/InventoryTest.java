@@ -32,7 +32,7 @@ public class InventoryTest {
 	@Test
 	public void setInvalidQuantityInCreate() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			InventoryItem inventB = new InventoryItem(null, -1);
+			InventoryItem inventB = new InventoryItem(null, null, -1);
 		});
 	}
 	
@@ -53,7 +53,7 @@ public class InventoryTest {
 	@Test
 	public void setInvalidMinimumInCreate() {
 		assertThrows(IllegalArgumentException.class, () -> {
-			InventoryItem inventB = new InventoryItem(null, 3, -1);
+			InventoryItem inventB = new InventoryItem(null, null, 3, -1);
 		});
 	}
 	
