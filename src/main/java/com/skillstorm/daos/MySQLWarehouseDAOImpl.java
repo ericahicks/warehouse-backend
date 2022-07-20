@@ -176,7 +176,7 @@ public class MySQLWarehouseDAOImpl implements WarehouseDAO {
 			String zip) throws SQLException {
 		String sql = buildQueryString(name, capacity, street, city, state, zip);
 		System.out.println(sql);
-		try (CallableStatement stmt = conn.prepareCall(sql)) {
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			// NOTE THIS IF-CHAIN MUST BE IN THE SAME ORDER
 			// AS THE IF-CHAIN IN THE WAREHOUSE QUERY BUILDER
 			int i = 1;

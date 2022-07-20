@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import com.skillstorm.builders.UserBuilder;
+
 /** 
  * Represents a user that wants to login to the warehouse
  * inventory system. 
@@ -77,7 +79,13 @@ public class User implements Serializable {
 		this.permissions = permissions;
 	}
 	
-	
+	public User(UserBuilder builder) {
+		this.id = builder.getId();
+		this.username = builder.getUsername();
+		this.password = builder.getPassword();
+		setEmail(builder.getEmail());
+		this.permissions = builder.getPermissions();
+	}
 
 	/**
 	 * Gets the unique userid that was generated when the user account is created.
