@@ -200,16 +200,15 @@ public class MySQLProductDAOImpl implements ProductDAO {
 				if (keys.next()) {
 					int key = keys.getInt(1); // Gets the auto generated key
 					product.setId(key);
-					return product;
 				}
 				conn.commit(); // Executes ALL queries in a given transaction
+				return product;
 			} else {
 				conn.rollback(); // Undoes any of the queries. Database pretends those never happened
+				return null;
 			}
 			
 		}
-		
-		return null;
 	}
 
 	@Override
