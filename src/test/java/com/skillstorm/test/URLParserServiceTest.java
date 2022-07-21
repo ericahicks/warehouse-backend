@@ -4,19 +4,20 @@ import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.skillstorm.services.URLParserService;
-import com.skillstorm.services.URLParserService.Type;
+import com.skillstorm.services.ProductURLParserService;
+import com.skillstorm.services.ProductURLParserService.Type;
+
 public class URLParserServiceTest {
 
 	// instance variables refreshed in each test
-	private static URLParserService parser;
+	private static ProductURLParserService parser;
 	
 	public URLParserServiceTest() { }
 	
 	// before all my tests - run this setup method
 	@BeforeClass // @BeforeAll
 	public static void setupBeforeAll() {
-		parser = new URLParserService();
+		parser = new ProductURLParserService();
 	}
 
 	@Test
@@ -57,7 +58,7 @@ public class URLParserServiceTest {
 	
 	@Test
 	public void testEnumValueOf0() {
-		URLParserService.Type type = Type.UNDEFINED;
+		ProductURLParserService.Type type = Type.UNDEFINED;
 		assertEquals(type.ordinal(), 0);
 	}
 	

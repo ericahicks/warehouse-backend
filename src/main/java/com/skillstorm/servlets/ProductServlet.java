@@ -1,8 +1,10 @@
 package com.skillstorm.servlets;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -10,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +20,7 @@ import com.skillstorm.conf.WarehouseDbCreds;
 import com.skillstorm.daos.MySQLProductDAOImpl;
 import com.skillstorm.daos.ProductDAO;
 import com.skillstorm.models.Product;
-import com.skillstorm.services.URLParserService;
+import com.skillstorm.services.ProductURLParserService;
 
 @WebServlet(urlPatterns = "/product/*")
 public class ProductServlet extends HttpServlet {
@@ -63,7 +66,7 @@ public class ProductServlet extends HttpServlet {
 	Connection conn;
 	ProductDAO dao;
 	ObjectMapper mapper = new ObjectMapper();
-	URLParserService urlService = new URLParserService();
+	ProductURLParserService urlService = new ProductURLParserService();
 
 	// Returns product(s)
 	@Override
@@ -98,6 +101,28 @@ public class ProductServlet extends HttpServlet {
 				resp.getWriter().append("Server unable to fetch product(s).");
 			}
 	}
+	
+	// Saves the product(s) and returns the saved product
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			urlService.setUrl(req.getRequestURI());
+			urlService.extractURL();
+			try {
+				switch (urlService.getType()) {
+				case ALL:
+					new ProductsHandler().putProduct(req, resp);
+					break;
+				default:
+					resp.setStatus(400);
+					resp.getWriter().append("Unrecognized api url post requested.");
+					break;
+				}
+			} catch (IOException | SQLException e) {
+				e.printStackTrace();
+				resp.setStatus(500);
+				resp.getWriter().append("Server unable to save product.");
+			}
+	}
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////    HANDLER METHODS    /////////////////////////////////
@@ -118,6 +143,7 @@ public class ProductServlet extends HttpServlet {
 				resp.getWriter().append("No product with the provided Id \"" + id + "\" found");
 			}
 		}
+		
 
 	}
 
@@ -135,6 +161,24 @@ public class ProductServlet extends HttpServlet {
 			} else {
 				resp.setContentType("application/json");
 				resp.getWriter().print(mapper.writeValueAsString(products));
+			}
+		}
+		
+
+		// POST /product/
+		public void putProduct(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ServletException {
+
+			InputStream reqBody = req.getInputStream();
+			Product newProduct = mapper.readValue(reqBody, Product.class);
+//			validatorService.validate(newArtist); // Could be a service
+			newProduct = dao.save(newProduct); // IF the id changed
+			if (newProduct != null) {
+				resp.setContentType("application/json");
+				resp.getWriter().print(mapper.writeValueAsString(newProduct));
+				resp.setStatus(201); // The default is 200
+			} else {
+				resp.setStatus(400);
+				resp.getWriter().append("Unable to create product.");
 			}
 		}
 
