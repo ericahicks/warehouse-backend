@@ -108,7 +108,7 @@ public class User implements Serializable {
 	 * Gets the username associated with this user account.
 	 * @return username The unique username chosen by the user when creating a user account.
 	 */
-	public String getUserame() {
+	public String getUsername() {
 		return username;
 	}
 
@@ -116,7 +116,7 @@ public class User implements Serializable {
 	 * Sets the username of this user account.
 	 * @param name A unique username to identify the user by.
 	 */
-	public void setName(String name) {
+	public void setUsername(String name) {
 		this.username = name;
 	}
 
@@ -153,8 +153,8 @@ public class User implements Serializable {
 	public void setEmail(String email) {
 		// RFC 5322 compliant regex from http://emailregex.com/
 		String regex = "(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)\\])";
-		if (email == null || !Pattern.matches(regex, email))
-			throw new IllegalArgumentException("Invalid email provided.");
+		//if (email == null || !Pattern.matches(regex, email))
+		//	throw new IllegalArgumentException("Invalid email provided.");
 		this.email = email;
 	}
 	

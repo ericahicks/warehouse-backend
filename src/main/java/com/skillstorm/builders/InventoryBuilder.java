@@ -26,7 +26,7 @@ public class InventoryBuilder {
 	//////////////////////////////////////////////////
 	///////////////////  Methods  ////////////////////
 	//////////////////////////////////////////////////
-	public InventoryBuilder product(Warehouse warehouse) {
+	public InventoryBuilder warehouse(Warehouse warehouse) {
 		this.warehouse = (Warehouse) warehouse.clone();
 		return this;
 	}

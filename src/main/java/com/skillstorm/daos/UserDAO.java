@@ -26,12 +26,14 @@ public interface UserDAO {
 	public Set<Integer> findPermissions(int userid) throws SQLException;
 	
 	public User save(User user) throws SQLException;
+
+	public User save(User user, Set<Integer> permissions) throws SQLException;
 	
-	public int addPermission(int warehouseid) throws SQLException;
+	public void addPermission(int warehouseid, int userid) throws SQLException;
 	
-	public int addPermissions(int[] warehouseids) throws SQLException;
+	public void addPermissions(Set<Integer> warehouseids, int userid) throws SQLException;
 	
-	public int update(User user) throws SQLException; 
+	public void update(User user) throws SQLException; 
 	
 	public void delete(User user) throws SQLException;
 	
