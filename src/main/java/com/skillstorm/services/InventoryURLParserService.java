@@ -6,15 +6,22 @@ import java.nio.charset.Charset;
 /**
  * Class for parsing a URL that is used for an API call
  * to Create/Read/Update/Delete a product.
+ * 
+ * GET all is
+ *  /inventory or /inventory/ or inventory/
+ *  
  * GET doesn't have a body, so the URL to get by warehouse and id is
- *  /inventory/{warehouse}/{product}
+ *  /inventory/{warehouseid}/{productid}
+ *  
  *  To get all the products from a warehouse do
- *  /inventory/warehouse/{warehouse}
+ *  /inventory/warehouse/{warehouseid}
+ *  
  *  To get all the inventory of a certain product
- *  /inventory/product/{product}
+ *  /inventory/product/{productid}
+ *  
  *  PUT can pass the key or just put it in the body
- *  /inventory/{warehouse}/{product} 
- *
+ *  /inventory/{warehouseid}/{productid} 
+ *  /inventory
  */
 public class InventoryURLParserService {
 	
@@ -116,7 +123,7 @@ public class InventoryURLParserService {
 	/**
 	 * @return the subDoman2
 	 */
-	public Object getSubDoman2() {
+	public Object getSubDomain2() {
 		return subDomain2;
 	}
 

@@ -61,7 +61,7 @@ public class InventoryURLParserTest {
 		parser.setURL(url);
 		parser.extractURL();
 		assertEquals(Type.PRODUCT, parser.getType());
-		assertEquals(1, parser.getSubDoman2());
+		assertEquals(1, parser.getSubDomain2());
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class InventoryURLParserTest {
 		parser.extractURL();
 		assertEquals(Type.WAREHOUSE, parser.getType());
 		assertEquals("warehouse", parser.getSubDomain1());
-		assertEquals(1, parser.getSubDoman2());
+		assertEquals(1, parser.getSubDomain2());
 	}
 	
 	@Test
@@ -81,7 +81,7 @@ public class InventoryURLParserTest {
 		parser.extractURL();
 		assertEquals(Type.BOTH, parser.getType());
 		assertEquals(12346, parser.getSubDomain1());
-		assertEquals(1, parser.getSubDoman2());
+		assertEquals(1, parser.getSubDomain2());
 	}
 	
 

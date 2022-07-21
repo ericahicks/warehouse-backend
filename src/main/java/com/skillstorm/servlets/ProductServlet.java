@@ -59,6 +59,7 @@ public class ProductServlet extends HttpServlet {
 		System.out.println("Servicing request!");
 		super.service(req, resp); // Keep this line
 	}
+	
 	///////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////// Class and Instance Variables /////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -68,6 +69,11 @@ public class ProductServlet extends HttpServlet {
 	ObjectMapper mapper = new ObjectMapper();
 	ProductURLParserService urlService = new ProductURLParserService();
 
+	
+	///////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////// HTTP Methods /////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////
+	
 	// Returns product(s)
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -182,7 +188,7 @@ public class ProductServlet extends HttpServlet {
 		
 		// GET /product/{ID}
 		public void getProduct(int id, HttpServletResponse resp) throws SQLException, JsonProcessingException, IOException {
-
+			
 			System.out.println("Product by Id handler method");Product product = dao.findById(id);
 			if (product != null) {
 				resp.setContentType("application/json");
