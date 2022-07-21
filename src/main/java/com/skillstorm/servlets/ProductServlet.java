@@ -123,11 +123,60 @@ public class ProductServlet extends HttpServlet {
 				resp.getWriter().append("Server unable to save product.");
 			}
 	}
+	
+	// Updates the product(s) and returns the saved product
+		@Override
+		protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+				urlService.setUrl(req.getRequestURI());
+				urlService.extractURL();
+				try {
+					switch (urlService.getType()) {
+					case ID:
+						new ProductByIdHandler().putProduct((int) urlService.getValue(), req, resp);
+						break;
+					case ALL:
+						new ProductsHandler().putProduct(req, resp);
+						break;
+					default:
+						resp.setStatus(400);
+						resp.getWriter().append("Unrecognized api url put requested.");
+						break;
+					}
+				} catch (IOException | SQLException e) {
+					e.printStackTrace();
+					resp.setStatus(500);
+					resp.getWriter().append("Server unable to update product.");
+				}
+		}
+		
+		// Deletes product(s)
+		@Override
+		protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+				urlService.setUrl(req.getRequestURI());
+				urlService.extractURL();
+				try {
+					switch (urlService.getType()) {
+					case ID:
+						new ProductByIdHandler().removeProduct((int) urlService.getValue(), resp);
+						break;
+					default:
+						resp.setStatus(400);
+						resp.getWriter().append("Unrecognized api url for delete requested.");
+						break;
+					}
+				} catch (IOException | SQLException e) {
+					e.printStackTrace();
+					resp.setStatus(500);
+					resp.getWriter().append("Server unable to delete product(s).");
+				}
+		}
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////    HANDLER METHODS    /////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////// 
 	///////////////////////////////////////////////////////////////////////////////////////
+	 
+	/*******************************************************************************************/
 
 	class ProductByIdHandler {
 		
@@ -144,8 +193,30 @@ public class ProductServlet extends HttpServlet {
 			}
 		}
 		
+		// PUT /product/{id}
+		public void putProduct(int id, HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ServletException {
 
+			InputStream reqBody = req.getInputStream();
+			Product newProduct = mapper.readValue(reqBody, Product.class);
+//					validatorService.validate(newArtist); // Could be a service
+			newProduct.setId(id);
+			dao.update(newProduct); 
+			resp.setStatus(200);
+			resp.getWriter().append("Product update successful.");
+		}
+		
+		// DELETE /product/{id}
+		public void removeProduct(int id, HttpServletResponse resp) throws SQLException, JsonProcessingException, IOException {
+
+			System.out.println("Product by Id handler method");
+			dao.delete(id);
+			resp.setStatus(204);
+			resp.getWriter().append("Removed product successfully.");
+		
+		}
+		
 	}
+    /*******************************************************************************************/
 
 	class ProductsHandler {
 
@@ -164,26 +235,21 @@ public class ProductServlet extends HttpServlet {
 			}
 		}
 		
-
-		// POST /product/
+		// PUT /product/
 		public void putProduct(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ServletException {
 
 			InputStream reqBody = req.getInputStream();
 			Product newProduct = mapper.readValue(reqBody, Product.class);
-//			validatorService.validate(newArtist); // Could be a service
-			newProduct = dao.save(newProduct); // IF the id changed
-			if (newProduct != null) {
-				resp.setContentType("application/json");
-				resp.getWriter().print(mapper.writeValueAsString(newProduct));
-				resp.setStatus(201); // The default is 200
-			} else {
-				resp.setStatus(400);
-				resp.getWriter().append("Unable to create product.");
-			}
+//					validatorService.validate(newArtist); // Could be a service
+			dao.update(newProduct); 
+			resp.setStatus(200);
+			resp.getWriter().append("Product update successful.");
 		}
-
+		
 	}
-
+	
+    /*******************************************************************************************/
+	
 	class ProductByNameHandler {
 
 		// GET /product/{name}
@@ -202,6 +268,8 @@ public class ProductServlet extends HttpServlet {
 			}
 		}
 	}
+    
+    /*******************************************************************************************/
 
 	class ProductsByCategoryHandler {
 
@@ -222,6 +290,8 @@ public class ProductServlet extends HttpServlet {
 		}
 
 	}
+	
+    /*******************************************************************************************/
 
 	class ProductsByBrandHandler {
 

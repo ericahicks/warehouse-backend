@@ -20,7 +20,7 @@ public interface ProductDAO {
 	
 	public Product save(Product product) throws SQLException;
 	
-	public void update(Product product) throws SQLException; 
+	public int update(Product product) throws SQLException; 
 	
 	public void delete(Product product) throws SQLException;
 	

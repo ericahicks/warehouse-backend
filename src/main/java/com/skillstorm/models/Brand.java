@@ -19,6 +19,13 @@ public final class Brand implements Serializable, Cloneable {
 	 * A unique name that this brand identifies by.
 	 */
 	private final String name;
+	
+
+	public Brand() {
+		super();
+		this.id = 0;
+		this.name = "";
+	}
 
 	/**
 	 * Constructor that sets the name and unique identification number

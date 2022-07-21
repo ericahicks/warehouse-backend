@@ -192,7 +192,7 @@ public class MySQLProductDAOImpl implements ProductDAO {
 			ps.setString(3, product.getDescription());
 			ps.setString(4, product.getSize());
 			ps.setInt(5, product.getBrand().getId());
-			ps.setString(6, product.getImareURL());
+			ps.setString(6, product.getImageURL());
 			
 			int rowsAffected = ps.executeUpdate(); // If 0 is returned, my data didn't save
 			if (rowsAffected != 0) {
@@ -212,7 +212,8 @@ public class MySQLProductDAOImpl implements ProductDAO {
 	}
 
 	@Override
-	public void update(Product product) throws SQLException {
+	public int update(Product product) throws SQLException {
+		int rowsAffected = 0;
 		String sql = "UPDATE product "
 				+ "SET "
 				+ "    categoryid = ?, "
@@ -223,27 +224,19 @@ public class MySQLProductDAOImpl implements ProductDAO {
 				+ "    imageURL = ? "
 				+ "WHERE "
 				+ "    productid = ?";
-		
-		// Start a transaction
-		conn.setAutoCommit(false); // Prevents each query from immediately altering the database
-					
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, product.getCategory().getId());
 			ps.setString(2, product.getName());
 			ps.setString(3, product.getDescription());
 			ps.setString(4, product.getSize());
 			ps.setInt(5, product.getBrand().getId());
-			ps.setString(6, product.getImareURL());
+			ps.setString(6, product.getImageURL());
 			ps.setInt(7, product.getId());
 			
-			int rowsAffected = ps.executeUpdate(); // If 0 is returned, the data didn't update
-			if (rowsAffected != 0) {
-				conn.commit(); // Executes ALL queries in a given transaction
-			} else {
-				conn.rollback(); // Undoes any of the queries. Database pretends those never happened
-			}
+			rowsAffected = ps.executeUpdate(); // If 0 is returned, the data didn't update
 			
 		}
+		return rowsAffected;
 		
 	}
 

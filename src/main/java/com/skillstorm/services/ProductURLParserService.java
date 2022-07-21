@@ -51,9 +51,6 @@ public class ProductURLParserService {
 	
 	public void extractValue(String value) {
 		value = URLDecoder.decode(value, Charset.defaultCharset());
-		System.out.println("Extracting the value from the url");
-		System.out.println("Value=" + value);
-		System.out.println("Is number? " + value.matches("\\d+"));
 		if (value.matches("\\d+")) {
 			this.value = Integer.valueOf(value);
 		} else {

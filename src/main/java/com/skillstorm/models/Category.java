@@ -21,6 +21,11 @@ public final class Category implements Serializable, Cloneable {
 	 */
 	private final String name;
 	
+	public Category() { 
+		this.id = 0;
+		this.name = "";
+	}
+	
 	/** 
 	 * Constructor that sets the name and the id of this category.
 	 * @param id

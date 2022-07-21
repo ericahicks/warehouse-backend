@@ -233,7 +233,7 @@ public class Product implements Serializable, Cloneable {
 	 * Gets the path or url to an image of the product.
 	 * @return the imageURL
 	 */
-	public String getImareURL() {
+	public String getImageURL() {
 		return imageURL;
 	}
 
@@ -241,7 +241,7 @@ public class Product implements Serializable, Cloneable {
 	 * Sets the url or path to the image file containing an image of the product.
 	 * @param imageURL the imageURL to set
 	 */
-	public void setImareURL(String imageURL) {
+	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
 	}
 
