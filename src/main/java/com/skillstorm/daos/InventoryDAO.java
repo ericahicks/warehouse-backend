@@ -43,9 +43,9 @@ public interface InventoryDAO {
 	
 	public int update(int warehouseId, int productId, int quantity, int minimum) throws SQLException;
 	
-	public void delete(InventoryItem item) throws SQLException;
+	public int delete(InventoryItem item) throws SQLException;
 	
-	public void delete(int warehouseId, int productId) throws SQLException;
+	public int delete(int warehouseId, int productId) throws SQLException;
 	
 	public void deleteMany(int warehouseId, int[] productIds) throws SQLException;
 	

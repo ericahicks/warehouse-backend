@@ -376,19 +376,20 @@ public class MySQLInventoryDAOImpl implements InventoryDAO {
 	}
 
 	@Override
-	public void delete(InventoryItem item) throws SQLException {
-		delete(item.getWarehouse().getId(), item.getProduct().getId());
+	public int delete(InventoryItem item) throws SQLException {
+		return delete(item.getWarehouse().getId(), item.getProduct().getId());
 	}
 
 	@Override
-	public void delete(int warehouseId, int productId) throws SQLException {
+	public int delete(int warehouseId, int productId) throws SQLException {
 		String sql = "DELETE FROM inventory WHERE warehouseid = ? AND  productid = ?";
-		
+		int rowsAffected = 0;
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, warehouseId);
 			ps.setInt(2, productId);
-			ps.executeUpdate();
+			rowsAffected = ps.executeUpdate();
 		}
+		return rowsAffected;
 		
 	}
 

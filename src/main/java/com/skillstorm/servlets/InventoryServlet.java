@@ -1,6 +1,7 @@
 package com.skillstorm.servlets;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillstorm.conf.WarehouseDbCreds;
 import com.skillstorm.daos.MySQLInventoryDAOImpl;
 import com.skillstorm.models.InventoryItem;
-import com.skillstorm.models.Product;
 import com.skillstorm.services.InventoryURLParserService;
 
 @WebServlet(urlPatterns = "/inventory/*")
@@ -59,7 +59,6 @@ public class InventoryServlet extends HttpServlet {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println("Inventory Servlet Destroyed!");
@@ -114,6 +113,76 @@ public class InventoryServlet extends HttpServlet {
 	}
 	
 
+	// Saves the product(s) and returns the saved product
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			urlService.setURL(req.getRequestURI());
+			urlService.extractURL();
+			try {
+				switch (urlService.getType()) {
+				case ALL:
+					new InventoryAllHandler().putInventory(req, resp);
+					break;
+				default:
+					resp.setStatus(400);
+					resp.getWriter().append("Unrecognized api url post requested.");
+					break;
+				}
+			} catch (IOException | SQLException e) {
+				e.printStackTrace();
+				resp.setStatus(500);
+				resp.getWriter().append("Server unable to save product.");
+			}
+	}
+	
+
+	// Updates the inventory item(s)
+		@Override
+		protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+				urlService.setURL(req.getRequestURI());
+				urlService.extractURL();
+				try {
+					switch (urlService.getType()) {
+					case ALL:
+						new InventoryAllHandler().putInventory(req, resp);
+						break;
+					default:
+						resp.setStatus(400);
+						resp.getWriter().append("Unrecognized api url put requested.");
+						break;
+					}
+				} catch (IOException | SQLException e) {
+					e.printStackTrace();
+					resp.setStatus(500);
+					resp.getWriter().append("Server unable to update inventory item.");
+				}
+		}
+		
+
+		// Deletes product(s)
+		@Override
+		protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+				urlService.setURL(req.getRequestURI());
+				urlService.extractURL();
+				try {
+					switch (urlService.getType()) {
+					case BOTH:
+						new InventoryByWarehouseProductHandler().removeProduct((int) urlService.getSubDomain1(), 
+								                               (int) urlService.getSubDomain2(), resp);
+						break;
+					default:
+						resp.setStatus(400);
+						resp.getWriter().append("Unrecognized api url for delete requested.");
+						break;
+					}
+				} catch (IOException | SQLException e) {
+					e.printStackTrace();
+					resp.setStatus(500);
+					resp.getWriter().append("Server unable to delete inventory item.");
+				}
+		}
+	
+
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////    HANDLER METHODS    /////////////////////////////////
@@ -138,6 +207,34 @@ public class InventoryServlet extends HttpServlet {
 				resp.getWriter().print(mapper.writeValueAsString(inventory));
 			}
 		}
+		
+
+		// PUT /inventory/
+		public void putInventory(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ServletException {
+
+			InputStream reqBody = req.getInputStream();
+			InventoryItem newInventoryItem = mapper.readValue(reqBody, InventoryItem.class);
+//					validatorService.validate(newArtist); // Could be a service
+			int rowsAffected = dao.update(newInventoryItem); // 1 is a put, 2 is a update
+			switch (rowsAffected) {
+			case 1:
+				resp.getWriter().append("Inventory Item created successfully");
+				resp.setStatus(201);
+				break;
+			case 2:
+				resp.getWriter().append("Inventory Item updated successfully");
+				resp.setStatus(200);
+				break;
+			case 0:
+				resp.getWriter().append("Unable to create Inventory Item.");
+				resp.setStatus(400);
+				break;
+			default:
+				resp.getWriter().append("Unrecognized response from server during creation of inventory item.");
+				resp.setStatus(500);
+				break;
+			}
+		}
 	}
 	
 	/*******************************************************************************************/
@@ -157,7 +254,7 @@ public class InventoryServlet extends HttpServlet {
 			} catch (IndexOutOfBoundsException  | IllegalArgumentException e) {
 				System.out.println("No inventory item for warehouse " + warehouseid);
 				resp.setStatus(404);
-				resp.getWriter().append("No product with the provided warehouseId " + warehouseid);
+				resp.getWriter().append("No inventory item with the provided warehouseId " + warehouseid);
 			}
 		}
 	}
@@ -196,10 +293,26 @@ public class InventoryServlet extends HttpServlet {
 			} catch (IndexOutOfBoundsException e) {
 				System.out.println("No inventory item for warehouse " + warehouseid + " and product " + productid);
 				resp.setStatus(404);
-				resp.getWriter().append("No product with the provided warehouseId " + warehouseid + " "
+				resp.getWriter().append("No inventory item with the provided warehouseId " + warehouseid + " "
 						+ "productid " + productid + " found");
 			}
 		}
+		
+
+		// DELETE /product/{id}
+		public void removeProduct(int warehouseid, int productid, HttpServletResponse resp) throws SQLException, JsonProcessingException, IOException {
+
+			int rowsAffected = dao.delete(warehouseid, productid);
+			if (rowsAffected > 0) {
+				resp.setStatus(204);
+				resp.getWriter().append("Removed inventory item successfully.");
+			} else {
+				resp.setStatus(204);
+				resp.getWriter().append("Nothing to delete.");
+			}
+			
+		}
+		
 	}
 	
 
