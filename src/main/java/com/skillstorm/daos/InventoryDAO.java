@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.skillstorm.models.InventoryItem;
 import com.skillstorm.models.Product;
+import com.skillstorm.models.Warehouse;
 
 public interface InventoryDAO {
 
@@ -34,9 +35,13 @@ public interface InventoryDAO {
 	
 	public int findInventoryTotalByWarehouseProduct(int warehouseId, String productname) throws SQLException;
 	
-	public Product save(InventoryItem item) throws SQLException;
+	public int save(InventoryItem item) throws SQLException;
 	
-	public void update(InventoryItem item) throws SQLException; 
+	public int save (int warehouseId, int productId, int quantity, int minimum) throws SQLException;
+	
+	public int update(InventoryItem item) throws SQLException; 
+	
+	public int update(int warehouseId, int productId, int quantity, int minimum) throws SQLException;
 	
 	public void delete(InventoryItem item) throws SQLException;
 	
@@ -44,8 +49,23 @@ public interface InventoryDAO {
 	
 	public void deleteMany(int warehouseId, int[] productIds) throws SQLException;
 	
+	public void deleteMany(int[] warehouseIds, int[] productIds) throws SQLException;
+	
 	public void deleteMany(int[] warehouseIds, int productId) throws SQLException;
 
 	public void deleteMany(InventoryItem[] items) throws SQLException;
+
+	public int addSomeProduct(Warehouse warehouse, Product product, int unitsAdded) throws SQLException ;
+
+	public int addSomeProduct(int warehouseId, int productId, int unitsAdded) throws SQLException ;
+
+	public int removeSomeProduct(Warehouse warehouse, Product product, int unitsRemoved) throws SQLException ;
+
+	public int removeSomeProduct(int warehouseId, int productId, int unitsAdded) throws SQLException ;
+
+	public int removeAllOfOneProduct(Warehouse warehouse, Product product) throws SQLException ;
+
+	public int removeAllOfOneProduct(int warehouseId, int productId) throws SQLException ;
+
 
 }

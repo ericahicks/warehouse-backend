@@ -68,7 +68,7 @@ public class InventoryItem implements Serializable, Cloneable {
 		this.quantity = builder.getQuantity();
 		this.minimum = builder.getMinimum();
 	}
-	
+
 	@Override
 	public Object clone() {
 	    try {
