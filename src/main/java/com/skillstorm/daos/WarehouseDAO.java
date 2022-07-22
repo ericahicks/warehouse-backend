@@ -34,8 +34,8 @@ public interface WarehouseDAO {
 	
 	public int update(Warehouse warehouse) throws SQLException; 
 	
-	public void delete(Warehouse warehouse) throws SQLException;
+	public int delete(Warehouse warehouse) throws SQLException;
 	
-	public void delete(int warehouseId) throws SQLException;
+	public int delete(int warehouseId) throws SQLException;
 
 }

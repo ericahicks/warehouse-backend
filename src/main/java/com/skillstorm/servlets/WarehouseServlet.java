@@ -1,6 +1,7 @@
 package com.skillstorm.servlets;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -18,6 +19,8 @@ import com.skillstorm.daos.MySQLWarehouseDAOImpl;
 import com.skillstorm.models.InventoryItem;
 import com.skillstorm.models.Warehouse;
 import com.skillstorm.services.WarehouseURLParserService;
+import com.skillstorm.servlets.InventoryServlet.InventoryAllHandler;
+import com.skillstorm.servlets.InventoryServlet.InventoryByWarehouseProductHandler;
 
 @WebServlet(urlPatterns = "/warehouse/*")
 public class WarehouseServlet  extends HttpServlet  {
@@ -119,6 +122,75 @@ public class WarehouseServlet  extends HttpServlet  {
 			}
 	}
 	
+	// Saves the warehouse
+		@Override
+		protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+				urlService.setURL(req.getRequestURI());
+				urlService.extractURL();
+				try {
+					switch (urlService.getType()) {
+					case ALL:
+						new WarehouseAllHandler().postWarehouse(req, resp);
+						break;
+					default:
+						resp.setStatus(400);
+						resp.getWriter().append("Unrecognized api url post requested.");
+						break;
+					}
+				} catch (IOException | SQLException e) {
+					e.printStackTrace();
+					resp.setStatus(500);
+					resp.getWriter().append("Server unable to save warehouse.");
+				}
+		}
+		
+
+		// Updates the inventory item(s)
+			@Override
+			protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+					urlService.setURL(req.getRequestURI());
+					urlService.extractURL();
+					try {
+						switch (urlService.getType()) {
+						case ALL:
+							new WarehouseAllHandler().putWarehouse(req, resp);
+							break;
+						default:
+							resp.setStatus(400);
+							resp.getWriter().append("Unrecognized api url put requested.");
+							break;
+						}
+					} catch (IOException | SQLException e) {
+						e.printStackTrace();
+						resp.setStatus(500);
+						resp.getWriter().append("Server unable to update warehouse.");
+					}
+			}
+			
+
+			// Deletes an inventory item
+			@Override
+			protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+					urlService.setURL(req.getRequestURI());
+					urlService.extractURL();
+					try {
+						switch (urlService.getType()) {
+						case ID:
+							new WarehouseByIdHandler().removeWarehouse((int) urlService.getSubDomain1(), resp);
+							break;
+						default:
+							resp.setStatus(400);
+							resp.getWriter().append("Unrecognized api url for delete requested.");
+							break;
+						}
+					} catch (IOException | SQLException e) {
+						e.printStackTrace();
+						resp.setStatus(500);
+						resp.getWriter().append("Server unable to delete warehouse.");
+					}
+			}
+		
+	
 
 	///////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////    HANDLER METHODS    /////////////////////////////////
@@ -135,10 +207,45 @@ public class WarehouseServlet  extends HttpServlet  {
 			System.out.println(warehouse);
 			if (warehouse == null || warehouse.isEmpty()) {
 				resp.setStatus(404);
-				resp.getWriter().append("No inventory found.");
+				resp.getWriter().append("No warehouse found.");
 			} else {
 				resp.setContentType("application/json");
 				resp.getWriter().print(mapper.writeValueAsString(warehouse));
+			}
+		}
+		
+
+		// POST /warehouse/
+		public void postWarehouse(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException {
+
+			InputStream reqBody = req.getInputStream();
+			Warehouse warehouse = mapper.readValue(reqBody, Warehouse.class);
+//					validatorService.validate(newArtist); // Could be a service
+			Warehouse newWarehouse = dao.save(warehouse); // 1 is a put, 2 is a update
+			if (newWarehouse == null) {
+				resp.setStatus(404);
+				resp.getWriter().append("Unable to save warehouse.");
+			} else {
+				resp.setStatus(201);
+				resp.setContentType("application/json");
+				resp.getWriter().print(mapper.writeValueAsString(newWarehouse));
+			}
+		}
+		
+
+		// PUT /warehouse/
+		public void putWarehouse(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException {
+
+			InputStream reqBody = req.getInputStream();
+			Warehouse warehouse = mapper.readValue(reqBody, Warehouse.class);
+//					validatorService.validate(newArtist); // Could be a service
+			int rowsAffected = dao.update(warehouse); // 1 is a put, 2 is a update
+			if (rowsAffected < 1) {
+				resp.setStatus(404);
+				resp.getWriter().append("Unable to update warehouse " + warehouse.getId());
+			} else {
+				resp.setStatus(200);
+				resp.getWriter().append("Updated warehouse " + warehouse.getId());
 			}
 		}
 	}
@@ -160,6 +267,19 @@ public class WarehouseServlet  extends HttpServlet  {
 				resp.setContentType("application/json");
 				resp.getWriter().print(mapper.writeValueAsString(warehouse));
 			}
+		}
+			
+
+		// DELETE /warehouse/{id}
+		public void removeWarehouse(int warehouseid, HttpServletResponse resp) throws SQLException, JsonProcessingException, IOException {
+
+			int rowsAffected = dao.delete(warehouseid);
+			if (rowsAffected > 0) {
+				resp.setStatus(200);
+			} else {
+				resp.setStatus(204);
+			}
+			
 		}
 	}
 	

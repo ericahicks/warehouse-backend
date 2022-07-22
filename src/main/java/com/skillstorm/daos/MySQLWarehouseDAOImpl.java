@@ -221,9 +221,6 @@ public class MySQLWarehouseDAOImpl implements WarehouseDAO {
 				+ " street, city, state, zip) VALUES "
 				+ "	(?, ?, ?, ?, ?, ?)";
 		
-		// Start a transaction
-		conn.setAutoCommit(false); // Prevents each query from immediately altering the database
-
 		// Obtain auto incremented values with RETURN_GENERATED_KEYS
 		try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			ps.setString(1, warehouse.getName());
@@ -233,22 +230,16 @@ public class MySQLWarehouseDAOImpl implements WarehouseDAO {
 			ps.setString(5, warehouse.getState().getAbbreviation());
 			ps.setString(6, warehouse.getZip());
 			
-			int rowsAffected = ps.executeUpdate(); // If 0 is returned, my data didn't save
-			if (rowsAffected != 0) {
-				ResultSet keys = ps.getGeneratedKeys();
-				if (keys.next()) {
-					int key = keys.getInt(1); // Gets the auto generated key
-					warehouse.setId(key);
-				}
-				System.out.println("Committing the save changes");
-				conn.commit(); // Executes ALL queries in a given transaction
-				return warehouse;
+			ps.executeUpdate();
+			ResultSet keys = ps.getGeneratedKeys();
+			if (keys.next()) {
+				int key = keys.getInt(1); // Gets the auto generated key
+				warehouse.setId(key);
 			} else {
-				System.out.println("Rolling back the save changes");
-				conn.rollback(); // Undoes any of the queries. Database pretends those never happened
-				return null;
+				// not saved, return null
+				warehouse = null;
 			}
-			
+			return warehouse;
 		}
 		
 	}
@@ -291,28 +282,19 @@ public class MySQLWarehouseDAOImpl implements WarehouseDAO {
 	}
 
 	@Override
-	public void delete(Warehouse warehouse) throws SQLException {
-		delete(warehouse.getId());
+	public int delete(Warehouse warehouse) throws SQLException {
+		return delete(warehouse.getId());
 		
 	}
 
 	@Override
-	public void delete(int warehouseId) throws SQLException {
+	public int delete(int warehouseId) throws SQLException {
 		String sql = "DELETE FROM warehouse WHERE warehouseid = ?";
 
-		// Start a transaction
-		conn.setAutoCommit(false); // Prevents each query from immediately altering the database
-		
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
 			ps.setInt(1, warehouseId);
 			
-			int rowsAffected = ps.executeUpdate(); // If 0 is returned, nothing returned
-			if (rowsAffected != 0) {
-				conn.commit(); // Executes ALL queries in a given transaction
-			} else {
-				conn.rollback(); // Undoes any of the queries. Database pretends those never happened
-			}
-			
+			return ps.executeUpdate(); 
 		}
 		
 	}
