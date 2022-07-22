@@ -8,15 +8,15 @@ import java.nio.charset.Charset;
  * to Create/Read/Update/Delete a product.
  * 
  * GET all is
- *  /inventory or /inventory/ or inventory/
+ *  /inventory/
  *  
- * GET doesn't have a body, so the URL to get by warehouse and id is
+ * GET by warehouseid and productid
  *  /inventory/{warehouseid}/{productid}
  *  
- *  To get all the products from a warehouse do
+ *  To get all the products from a warehouse 
  *  /inventory/warehouse/{warehouseid}
  *  
- *  To get all the inventory of a certain product
+ *  To get all the inventory of a certain product across all warehouses
  *  /inventory/product/{productid}
  *  
  *  PUT can put the ids in the body so it uses the api url
