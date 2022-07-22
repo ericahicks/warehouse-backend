@@ -3,7 +3,7 @@ package com.skillstorm.services;
 import java.net.URLDecoder;
 import java.nio.charset.Charset;
 
-public class ProductURLParserService {
+public class ProductURLParserService implements URLParserService {
 	
 	public static enum Type {
 		UNDEFINED,

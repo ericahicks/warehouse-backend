@@ -5,46 +5,46 @@ import java.nio.charset.Charset;
 
 /**
  * Class for parsing a URL that is used for an API call
- * to Create/Read/Update/Delete a product.
+ * to Create/Read/Update/Delete a warehouse.
  * 
  * GET all is
- *  /inventory or /inventory/ or inventory/
+ *  /warehouse or /warehouse/ or warehouse/
  *  
- * GET doesn't have a body, so the URL to get by warehouse and id is
- *  /inventory/{warehouseid}/{productid}
- *  
- *  To get all the products from a warehouse do
- *  /inventory/warehouse/{warehouseid}
- *  
- *  To get all the inventory of a certain product
- *  /inventory/product/{productid}
- *  
- *  PUT can put the ids in the body so it uses the api url
- *  /inventory
+ * GET doesn't have a body, so the URL to get by different specifiers is:
+ *  /warehouse/{warehouseid}
+ *  /warehouse/name/{name}
+ *  /warehouse/city/{city}
+ *  /warehouse/state/{statecode}
+ *  /warehouse/zip/{zipcode}
+ *  /warehouse/available/{available-capacity-units}
  */
-public class InventoryURLParserService implements URLParserService {
+
+public class WarehouseURLParserService implements URLParserService {
 	
+
 	public static enum Type {
 		UNDEFINED,
 		ALL,
-		WAREHOUSE,
-		PRODUCT,
-		BOTH
+		ID,
+		NAME,
+		CITY,
+		STATE,
+		ZIP,
+		AVAILABLE
 	}
 	
 	private String url;
 	private Type type;
 	private Object subDomain1;
 	private Object subDomain2;
-	
-	
+
 	////////////////////////////////////////////////////
 	///////////////// Constructors   //////////////////
 	///////////////////////////////////////////////////
 
-	public InventoryURLParserService() { }
+	public WarehouseURLParserService() { }
 	
-	public InventoryURLParserService(String url) { }
+	public WarehouseURLParserService(String url) { }
 
 	////////////////////////////////////////////////////
 	///////////////////// Methods  ////////////////////
@@ -76,10 +76,17 @@ public class InventoryURLParserService implements URLParserService {
 		case 1:
 			type = Type.ALL;
 			break;
+		case 2:
+			try {
+				subDomain1 = Integer.valueOf(urlParts[1]);
+				type = Type.ID;
+			} catch (IllegalArgumentException e) {
+				type = Type.UNDEFINED;
+			}
+			break;
 		case 3:
 			extractValues(urlParts);
 			break;
-		case 2:
 		default:
 			type = Type.UNDEFINED;
 		}
@@ -88,23 +95,20 @@ public class InventoryURLParserService implements URLParserService {
 	private void extractValues(String[] urlParts) {
 		subDomain1 = extractValue(urlParts[1]);
 		subDomain2 = extractValue(urlParts[2]);
-		if (subDomain1.toString().matches("\\d+")) {
-			this.type = Type.BOTH;
-		} else {
-			this.type = Enum.valueOf(Type.class, 
-					                  urlParts[1].trim().toUpperCase());
+		this.type = Enum.valueOf(Type.class, 
+				                  urlParts[1].trim().toUpperCase());
+		if (type == Type.AVAILABLE) {
+			try {
+				subDomain2 = Integer.valueOf(urlParts[2]);
+			} catch (IllegalArgumentException e) {
+				type = Type.UNDEFINED;
+			}
 		}
-		
-		
 	}
 	
 	public Object extractValue(String value) {
 		value = URLDecoder.decode(value, Charset.defaultCharset());
-		if (value.matches("\\d+")) {
-			return Integer.valueOf(value);
-		} else {
-			return value;
-		}
+		return value;
 			
 	}
 
@@ -136,4 +140,5 @@ public class InventoryURLParserService implements URLParserService {
 	public void setURL(String url) {
 		this.url = url;
 	}
+
 }
