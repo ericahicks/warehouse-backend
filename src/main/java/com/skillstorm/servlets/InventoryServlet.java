@@ -78,7 +78,7 @@ public class InventoryServlet extends HttpServlet {
 	//////////////////////////////////// HTTP Methods /////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////
 	
-	// Returns product(s)
+	// Returns Inventory Item(s)
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			urlService.setURL(req.getRequestURI());
@@ -113,7 +113,7 @@ public class InventoryServlet extends HttpServlet {
 	}
 	
 
-	// Saves the product(s) and returns the saved product
+	// Saves the inventory item
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 			urlService.setURL(req.getRequestURI());
@@ -159,7 +159,7 @@ public class InventoryServlet extends HttpServlet {
 		}
 		
 
-		// Deletes product(s)
+		// Deletes an inventory item
 		@Override
 		protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 				urlService.setURL(req.getRequestURI());

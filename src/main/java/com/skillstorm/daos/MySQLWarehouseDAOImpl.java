@@ -47,7 +47,6 @@ public class MySQLWarehouseDAOImpl implements WarehouseDAO {
 			try {
 				return processResults(rs).get(0);
 			} catch (Exception e) {
-				e.printStackTrace();
 				return null;
 			}
 		}
@@ -155,6 +154,17 @@ public class MySQLWarehouseDAOImpl implements WarehouseDAO {
 
 		try (CallableStatement stmt = conn.prepareCall(sql)) {
 			stmt.setString(1, state.getAbbreviation());
+			ResultSet rs = stmt.executeQuery();
+			return processResults(rs);
+		}
+	}
+
+	@Override
+	public List<Warehouse> findByStateCode(String statecode) throws SQLException {
+		String sql = "{CALL find_warehouses_by_state(?)}";
+
+		try (CallableStatement stmt = conn.prepareCall(sql)) {
+			stmt.setString(1, statecode);
 			ResultSet rs = stmt.executeQuery();
 			return processResults(rs);
 		}

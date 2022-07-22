@@ -24,6 +24,8 @@ public interface WarehouseDAO {
 	
 	public List<Warehouse> findByState(State state) throws SQLException;
 	
+	public List<Warehouse> findByStateCode(String statecode) throws SQLException;
+	
 	public List<Warehouse> findByAvailableCapacity(int minimumAvailableCapacity) throws SQLException;
 	
 	public List<Warehouse> findByFilters(String name, int capacity, String street, String city, State state, String zip) throws SQLException;
